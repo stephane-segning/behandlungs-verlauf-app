@@ -5,9 +5,9 @@
     <session-factory>
         <!-- Mapping with model class containing annotations -->
         <mapping class="team.sema.dpa.digitalpatientenakte.models.CaseEntity"/>
-        <mapping class="team.sema.dpa.digitalpatientenakte.models.EdgeEntity"/>
+        <mapping class="team.sema.dpa.digitalpatientenakte.models.FlowEdgeEntity"/>
         <mapping class="team.sema.dpa.digitalpatientenakte.models.FlowChartElementEntity"/>
-        <mapping class="team.sema.dpa.digitalpatientenakte.models.NodeType"/>
+        <mapping class="team.sema.dpa.digitalpatientenakte.models.FlowElementType"/>
         <mapping class="team.sema.dpa.digitalpatientenakte.models.PatientEntity"/>
         <mapping class="team.sema.dpa.digitalpatientenakte.models.PatientStepEntity"/>
         <mapping class="team.sema.dpa.digitalpatientenakte.models.RelatedPerson"/>

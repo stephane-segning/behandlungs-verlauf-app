@@ -6,6 +6,7 @@ import org.hibernate.annotations.CacheConcurrencyStrategy;
 
 import java.io.Serializable;
 import java.util.Date;
+import java.util.Set;
 import java.util.UUID;
 
 @Data
@@ -20,13 +21,8 @@ public class CaseEntity implements Serializable {
     @Column(name = "case_id")
     private UUID id;
 
-    @GeneratedValue(strategy = GenerationType.SEQUENCE)
-    @Column(name = "id_number")
-    private String idNumber;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "pat_id")
-    private PatientEntity patient;
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "caseE")
+    private Set<PatientStepEntity> patient;
 
     @Temporal(TemporalType.DATE)
     @Column(name = "date")

@@ -20,12 +20,15 @@ public class FlowChartElementEntity implements Serializable {
     @Column(name = "node_id")
     private UUID id;
 
-    @ManyToMany(mappedBy = "nodes")
-    private Set<EdgeEntity> edges;
+    @OneToMany(mappedBy = "startNode")
+    private Set<FlowEdgeEntity> startingEdges;
+
+    @OneToMany(mappedBy = "endNode")
+    private Set<FlowEdgeEntity> endingEdges;
 
     @ManyToOne
     @Column(name = "type_id")
-    private NodeType type;
+    private FlowElementType type;
 
     @Column(columnDefinition = "varchar(50)")
     private String name;

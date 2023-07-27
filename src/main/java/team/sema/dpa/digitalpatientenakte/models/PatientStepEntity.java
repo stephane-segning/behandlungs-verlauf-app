@@ -20,20 +20,17 @@ public class PatientStepEntity implements Serializable {
     private UUID id;
 
     @ManyToOne
-    @JoinColumn(name = "patient_id")
+    @JoinColumn(name = "patient_id", nullable = false)
     private PatientEntity patient;
 
     @ManyToOne
-    @JoinColumn(name = "case_id")
+    @JoinColumn(name = "case_id", nullable = false)
     private CaseEntity caseE;
 
     @ManyToOne
-    @JoinColumn(name = "node_id")
-    private FlowChartElementEntity node;
+    @JoinColumn(name = "flow_id", nullable = false)
+    private FlowChartElementEntity flowChart;
 
     @Column(columnDefinition = "text")
     private String data;
-
-    @Enumerated(EnumType.STRING)
-    private RelatedPerson responsible;
 }
