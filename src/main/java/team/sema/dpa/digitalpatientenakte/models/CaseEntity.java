@@ -25,9 +25,9 @@ public class CaseEntity implements Serializable {
     private Set<PatientStepEntity> patient;
 
     @Temporal(TemporalType.DATE)
-    @Column(name = "date")
+    @Column(name = "date", updatable = false)
     private Date date;
 
-    @Column(name = "arrived_by")
+    @Column(name = "arrived_by", updatable = false)
     private String arrivedBy;
 }

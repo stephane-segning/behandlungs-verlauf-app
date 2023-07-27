@@ -10,7 +10,5 @@
         <mapping class="team.sema.dpa.digitalpatientenakte.models.FlowElementType"/>
         <mapping class="team.sema.dpa.digitalpatientenakte.models.PatientEntity"/>
         <mapping class="team.sema.dpa.digitalpatientenakte.models.PatientStepEntity"/>
-        <mapping class="team.sema.dpa.digitalpatientenakte.models.RelatedPerson"/>
-
     </session-factory>
 </hibernate-configuration>

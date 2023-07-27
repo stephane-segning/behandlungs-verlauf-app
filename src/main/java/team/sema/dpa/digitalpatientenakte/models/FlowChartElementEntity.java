@@ -17,7 +17,7 @@ public class FlowChartElementEntity implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
-    @Column(name = "node_id")
+    @Column(name = "flow_id")
     private UUID id;
 
     @OneToMany(mappedBy = "startNode")
@@ -27,7 +27,7 @@ public class FlowChartElementEntity implements Serializable {
     private Set<FlowEdgeEntity> endingEdges;
 
     @ManyToOne
-    @Column(name = "type_id")
+    @JoinColumn(name = "type_id")
     private FlowElementType type;
 
     @Column(columnDefinition = "varchar(50)")
