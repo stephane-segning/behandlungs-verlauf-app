@@ -3,8 +3,8 @@ package team.sema.dpa.digitalpatientenakte.dao.impl;
 import lombok.RequiredArgsConstructor;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
-import team.sema.dpa.digitalpatientenakte.dao.PatientRepo;
-import team.sema.dpa.digitalpatientenakte.models.PatientEntity;
+import team.sema.dpa.digitalpatientenakte.dao.CaseStepRepo;
+import team.sema.dpa.digitalpatientenakte.models.CaseStepEntity;
 import team.sema.dpa.digitalpatientenakte.state.Component;
 
 import java.util.List;
@@ -12,25 +12,26 @@ import java.util.UUID;
 
 @Component
 @RequiredArgsConstructor
-public class PatientRepositoryImpl implements PatientRepo {
+public class CaseStepRepoImpl implements CaseStepRepo {
     private final SessionFactory sessionFactory;
 
     @Override
-    public PatientEntity findById(UUID id) {
+    public CaseStepEntity findById(UUID id) {
         try (Session session = sessionFactory.openSession()) {
-            return session.get(PatientEntity.class, id);
+            return session.get(CaseStepEntity.class, id);
         }
     }
 
     @Override
-    public List<PatientEntity> findAll() {
+    public List<CaseStepEntity> findAll() {
         try (Session session = sessionFactory.openSession()) {
-            return session.createQuery("from PatientEntity", PatientEntity.class).list();
+            return session.createQuery("from CaseStepEntity", CaseStepEntity.class)
+                    .list();
         }
     }
 
     @Override
-    public PatientEntity save(PatientEntity patient) {
+    public CaseStepEntity save(CaseStepEntity patient) {
         try (Session session = sessionFactory.openSession()) {
             session.beginTransaction();
             session.persist(patient);
@@ -40,7 +41,7 @@ public class PatientRepositoryImpl implements PatientRepo {
     }
 
     @Override
-    public void delete(PatientEntity patient) {
+    public void delete(CaseStepEntity patient) {
         try (Session session = sessionFactory.openSession()) {
             session.beginTransaction();
             session.remove(patient);
@@ -49,10 +50,10 @@ public class PatientRepositoryImpl implements PatientRepo {
     }
 
     @Override
-    public List<PatientEntity> findByQuery(String input) {
+    public List<CaseStepEntity> findByCaseId(UUID caseId) {
         try (Session session = sessionFactory.openSession()) {
-            return session.createQuery("from PatientEntity where lower(cast(idNumber as text)) like :input or lower(firstName) like :input or lower(lastName) like :input", PatientEntity.class)
-                    .setParameter("input", "%" + input.toLowerCase() + "%")
+            return session.createQuery("from CaseStepEntity where caseE.id = :caseId", CaseStepEntity.class)
+                    .setParameter("caseId", caseId)
                     .list();
         }
     }

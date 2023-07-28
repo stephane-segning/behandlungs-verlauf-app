@@ -9,25 +9,30 @@ import javafx.fxml.Initializable;
 import javafx.scene.control.Label;
 import javafx.scene.text.Text;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import team.sema.dpa.digitalpatientenakte.models.CaseEntity;
 import team.sema.dpa.digitalpatientenakte.models.PatientEntity;
 import team.sema.dpa.digitalpatientenakte.services.CaseService;
-import team.sema.dpa.digitalpatientenakte.views.factories.CaseServiceFactory;
-import team.sema.dpa.digitalpatientenakte.views.factories.ControlledScreen;
+import team.sema.dpa.digitalpatientenakte.state.Component;
+import team.sema.dpa.digitalpatientenakte.state.ViewController;
+import team.sema.dpa.digitalpatientenakte.views.utils.ClickableTableRowCell;
+import team.sema.dpa.digitalpatientenakte.views.utils.ScreenUtils;
 
 import java.net.URL;
 import java.util.ResourceBundle;
 
 @Setter
 @Getter
-@NoArgsConstructor
-public class PatientInfoController implements Initializable, ControlledScreen, CaseServiceFactory {
+@Component
+@ViewController(name = ScreenUtils.PATIENT_INFO_SCREEN, view = "views/patient-info.fxml")
+@RequiredArgsConstructor
+public class PatientInfoController implements Initializable {
+    private final ScreensController screenParent;
+    private final CaseService caseService;
+
     private PatientEntity patient;
     private CaseEntity caseE;
-    private ScreensController screenParent;
-    private CaseService caseService;
 
     @FXML
     private Label label;
@@ -46,11 +51,6 @@ public class PatientInfoController implements Initializable, ControlledScreen, C
 
     @FXML
     private MFXTableView<CaseEntity> table;
-
-    public void setCaseService(CaseService caseService) {
-        this.caseService = caseService;
-        updateCaseTable();
-    }
 
     private void updateCaseTable() {
         updateCaseTable("");
@@ -113,7 +113,7 @@ public class PatientInfoController implements Initializable, ControlledScreen, C
         // Make sure the controller is indeed a PatientInfoController
         if (controller instanceof CaseGraphController caseGraphController) {
             caseGraphController.setPatient(patient);
-            caseGraphController.setCaseE(caseE);
+            caseGraphController.setACase(caseE);
         }
         screenParent.setScreen(ScreenUtils.CASE_GRAPH);
     }
@@ -134,6 +134,6 @@ public class PatientInfoController implements Initializable, ControlledScreen, C
     }
 
     private void handleRowClick(CaseEntity aCase) {
-        System.out.println("Clicked on case " + aCase);
+        this.caseE = aCase;
     }
 }

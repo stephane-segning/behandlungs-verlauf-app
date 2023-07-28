@@ -3,70 +3,75 @@ package team.sema.dpa.digitalpatientenakte.views;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
-import javafx.scene.control.Label;
-import javafx.scene.text.Text;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import team.sema.dpa.digitalpatientenakte.models.CaseEntity;
 import team.sema.dpa.digitalpatientenakte.models.PatientEntity;
-import team.sema.dpa.digitalpatientenakte.views.factories.ControlledScreen;
+import team.sema.dpa.digitalpatientenakte.state.Component;
+import team.sema.dpa.digitalpatientenakte.state.ViewController;
+import team.sema.dpa.digitalpatientenakte.views.graphs.CellType;
+import team.sema.dpa.digitalpatientenakte.views.graphs.Graph;
+import team.sema.dpa.digitalpatientenakte.views.utils.ScreenUtils;
 
 import java.net.URL;
 import java.util.ResourceBundle;
 
 @Setter
 @Getter
-@NoArgsConstructor
-public class CaseGraphController implements Initializable, ControlledScreen {
+@RequiredArgsConstructor
+@Component
+@ViewController(name = ScreenUtils.CASE_GRAPH, view = "views/case-graph.fxml")
+public class CaseGraphController implements Initializable {
+    private final ScreensController screenParent;
+
     private PatientEntity patient;
-    private CaseEntity caseE;
-    private ScreensController screenParent;
+    private CaseEntity aCase;
 
     @FXML
-    private Label label;
-
-    @FXML
-    private Text patientID;
-
-    @FXML
-    private Text birthDate;
-
-    @FXML
-    private Text telNumber;
+    private Graph graph;
 
     public void setPatient(PatientEntity patient) {
         this.patient = patient;
         updateGraph();
     }
 
-    public void setCaseE(CaseEntity caseE) {
-        this.caseE = caseE;
+    public void setACase(CaseEntity aCase) {
+        this.aCase = aCase;
         updateGraph();
     }
 
     private void updateGraph() {
-        if (patient != null) {
-            patientID.setText(patient.getIdNumber());
-            if (patient.getBirthDate() != null) birthDate.setText(patient.getBirthDate().toString());
-            if (patient.getTelNumber() != null) birthDate.setText(patient.getTelNumber());
-            label.setText(patient.getFirstName() + " " + patient.getLastName());
-        }
-
-        if (patient == null || caseE == null) {
+        if (patient == null || aCase == null) {
             return;
         }
 
-        // TODO fetch data from the view and show it in the graph
-        return;
+        final var model = graph.getModel();
+        model.clear();
+
+        graph.beginUpdate();
+
+        model.addCell("Cell A", CellType.RECTANGLE);
+        model.addCell("Cell B", CellType.RECTANGLE);
+        model.addCell("Cell C", CellType.RECTANGLE);
+        model.addCell("Cell D", CellType.TRIANGLE);
+        model.addCell("Cell E", CellType.TRIANGLE);
+        model.addCell("Cell F", CellType.RECTANGLE);
+        model.addCell("Cell G", CellType.RECTANGLE);
+
+        model.addEdge("Cell A", "Cell B");
+        model.addEdge("Cell A", "Cell C");
+        model.addEdge("Cell B", "Cell C");
+        model.addEdge("Cell C", "Cell D");
+        model.addEdge("Cell B", "Cell E");
+        model.addEdge("Cell D", "Cell F");
+        model.addEdge("Cell D", "Cell G");
+
+        graph.endUpdate();
     }
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-    }
-
-    private void updatePatientData(String query) {
-        System.out.println("Search button clicked");
     }
 
     public void handleBack(ActionEvent actionEvent) {

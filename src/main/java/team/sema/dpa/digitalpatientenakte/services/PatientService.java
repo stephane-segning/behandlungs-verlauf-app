@@ -3,10 +3,12 @@ package team.sema.dpa.digitalpatientenakte.services;
 import lombok.RequiredArgsConstructor;
 import team.sema.dpa.digitalpatientenakte.dao.PatientRepo;
 import team.sema.dpa.digitalpatientenakte.models.PatientEntity;
+import team.sema.dpa.digitalpatientenakte.state.Component;
 
 import java.util.List;
 import java.util.UUID;
 
+@Component
 @RequiredArgsConstructor
 public class PatientService {
 

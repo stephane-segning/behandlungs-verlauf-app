@@ -1,4 +1,4 @@
-package team.sema.dpa.digitalpatientenakte.views;
+package team.sema.dpa.digitalpatientenakte.views.utils;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;

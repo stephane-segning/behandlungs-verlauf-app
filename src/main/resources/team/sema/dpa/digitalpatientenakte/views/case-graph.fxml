@@ -2,15 +2,13 @@
 
 <?import io.github.palexdev.materialfx.controls.MFXButton?>
 <?import javafx.geometry.Insets?>
-<?import javafx.scene.control.*?>
-<?import javafx.scene.layout.BorderPane?>
-<?import javafx.scene.layout.GridPane?>
 <?import javafx.scene.layout.VBox?>
-<?import javafx.scene.text.Text?>
-<BorderPane stylesheets="@../css/style.css"
-            xmlns="http://javafx.com/javafx/17"
-            xmlns:fx="http://javafx.com/fxml/1"
-            fx:controller="team.sema.dpa.digitalpatientenakte.views.CaseGraphController">
+<?import team.sema.dpa.digitalpatientenakte.views.graphs.Graph?>
+<Graph stylesheets="@../css/style.css"
+       xmlns="http://javafx.com/javafx/17"
+       xmlns:fx="http://javafx.com/fxml/1"
+       fx:id="graph"
+       fx:controller="team.sema.dpa.digitalpatientenakte.views.CaseGraphController">
 
     <left>
         <VBox spacing="10" minWidth="256">
@@ -19,32 +17,7 @@
             </padding>
 
             <MFXButton text="Back" onAction="#handleBack"/>
-
-            <Separator/>
-            <Label text="Patient ID"/>
-            <Text fx:id="patientID"/>
-
-            <Separator/>
-            <Label text="Birth date"/>
-            <Text fx:id="birthDate"/>
-
-            <Separator/>
-            <Label text="Phone number"/>
-            <Text fx:id="telNumber"/>
-
         </VBox>
     </left>
-    <center>
 
-        <VBox spacing="10">
-            <padding>
-                <Insets bottom="12.0" left="8.0" right="16.0" top="12.0"/>
-            </padding>
-
-            <Label styleClass="header" GridPane.rowIndex="0" maxWidth="Infinity" fx:id="label"/>
-
-            <Text text="The graph should be here"/>
-        </VBox>
-    </center>
-
-</BorderPane>
+</Graph>

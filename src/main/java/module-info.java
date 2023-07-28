@@ -11,8 +11,8 @@ module team.sema.dpa.digitalpatientenakte {
     requires MaterialFX;
     requires lombok;
     requires java.naming;
-
-    opens team.sema.dpa.digitalpatientenakte to javafx.fxml;
+    requires org.burningwave.core;
+    requires org.apache.commons.collections4;
 
     exports team.sema.dpa.digitalpatientenakte;
     exports team.sema.dpa.digitalpatientenakte.dao;
@@ -20,9 +20,11 @@ module team.sema.dpa.digitalpatientenakte {
     exports team.sema.dpa.digitalpatientenakte.models;
     exports team.sema.dpa.digitalpatientenakte.services;
     exports team.sema.dpa.digitalpatientenakte.views;
-    exports team.sema.dpa.digitalpatientenakte.views.factories;
+    exports team.sema.dpa.digitalpatientenakte.views.utils;
+    exports team.sema.dpa.digitalpatientenakte.views.graphs;
 
+    opens team.sema.dpa.digitalpatientenakte to javafx.fxml;
     opens team.sema.dpa.digitalpatientenakte.views to javafx.fxml;
     opens team.sema.dpa.digitalpatientenakte.models to javafx.fxml, org.hibernate.orm.core;
-    opens team.sema.dpa.digitalpatientenakte.views.factories to javafx.fxml;
+    opens team.sema.dpa.digitalpatientenakte.views.utils to javafx.fxml;
 }

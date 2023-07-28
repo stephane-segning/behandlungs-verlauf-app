@@ -1,15 +1,18 @@
-package team.sema.dpa.digitalpatientenakte.views;
+package team.sema.dpa.digitalpatientenakte.views.utils;
 
 import io.github.palexdev.materialfx.controls.MFXTableColumn;
 import io.github.palexdev.materialfx.controls.MFXTableRow;
 import io.github.palexdev.materialfx.controls.MFXTableView;
 import io.github.palexdev.materialfx.controls.cell.MFXTableRowCell;
 import javafx.scene.input.MouseButton;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 
 import java.util.Comparator;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class ClickableTableRowCell {
 
     public static <T, U extends Comparable<? super U>> MFXTableColumn<T> of(String title, Function<T, U> extractor, Consumer<T> onClick) {
