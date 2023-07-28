@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="SqlDialectMappings">
+    <file url="file://$PROJECT_DIR$/src/main/java/team/sema/dpa/digitalpatientenakte/models/CaseEntity.java" dialect="PostgreSQL" />
+    <file url="file://$PROJECT_DIR$/src/main/java/team/sema/dpa/digitalpatientenakte/models/CaseStepEntity.java" dialect="PostgreSQL" />
+    <file url="file://$PROJECT_DIR$/src/main/java/team/sema/dpa/digitalpatientenakte/models/FlowCaseStepView.java" dialect="GenericSQL" />
+    <file url="file://$PROJECT_DIR$/src/main/java/team/sema/dpa/digitalpatientenakte/models/FlowChartElementEntity.java" dialect="PostgreSQL" />
+    <file url="file://$PROJECT_DIR$/src/main/java/team/sema/dpa/digitalpatientenakte/models/FlowEdgeEntity.java" dialect="PostgreSQL" />
+    <file url="file://$PROJECT_DIR$/src/main/java/team/sema/dpa/digitalpatientenakte/models/FlowElementTypeEntity.java" dialect="PostgreSQL" />
+    <file url="file://$PROJECT_DIR$/src/main/java/team/sema/dpa/digitalpatientenakte/models/PatientEntity.java" dialect="PostgreSQL" />
+    <file url="PROJECT" dialect="PostgreSQL" />
+  </component>
+</project>

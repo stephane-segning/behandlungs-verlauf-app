@@ -10,7 +10,9 @@ import java.util.UUID;
 
 @Data
 @Entity
-@Table(name = "flow_chart_elements")
+@Table(name = "flow_chart_elements", indexes = {
+        @Index(name = "type_element_index", columnList = "type_id")
+})
 @Cacheable
 @org.hibernate.annotations.Cache(usage = CacheConcurrencyStrategy.READ_ONLY)
 public class FlowChartElementEntity implements Serializable {
@@ -28,7 +30,7 @@ public class FlowChartElementEntity implements Serializable {
 
     @ManyToOne
     @JoinColumn(name = "type_id")
-    private FlowElementType type;
+    private FlowElementTypeEntity type;
 
     @Column(columnDefinition = "varchar(50)")
     private String name;

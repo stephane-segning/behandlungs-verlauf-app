@@ -35,7 +35,7 @@ public class MainApplication extends Application {
     @Override
     public void start(Stage primaryStage) throws IOException {
         final var mainContainer = new ScreensController(patientService, caseService);
-        mainContainer.loadScreen(ScreenUtils.MAIN_SCREEN, "main-view.fxml");
+        mainContainer.loadScreen(ScreenUtils.MAIN_SCREEN, "main.fxml");
         mainContainer.loadScreen(ScreenUtils.PATIENT_INFO_SCREEN, "patient-info.fxml");
         mainContainer.loadScreen(ScreenUtils.CASE_GRAPH, "case-graph.fxml");
 

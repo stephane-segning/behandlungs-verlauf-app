@@ -56,4 +56,14 @@ public class CaseRepoImpl implements CaseRepo {
                     .list();
         }
     }
+
+    @Override
+    public List<CaseEntity> findByPatientIdQuery(UUID patientId, String query) {
+        try (Session session = sessionFactory.openSession()) {
+            return session.createQuery("from CaseEntity where patient.id = :patientId and lower(id::text) like :query", CaseEntity.class)
+                    .setParameter("patientId", patientId)
+                    .setParameter("query", "%" + query + "%")
+                    .list();
+        }
+    }
 }

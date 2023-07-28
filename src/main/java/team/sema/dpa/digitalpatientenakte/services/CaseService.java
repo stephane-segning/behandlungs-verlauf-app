@@ -28,8 +28,12 @@ public class CaseService {
         repository.delete(model);
     }
 
-    public List<CaseEntity> getCaseByPatientId(UUID patientId) {
+    public List<CaseEntity> getCasesByPatientId(UUID patientId) {
         return repository.findByPatientIdQuery(patientId);
+    }
+
+    public List<CaseEntity> getCasesByPatientIdAndQuery(UUID patientId, String query) {
+        return repository.findByPatientIdQuery(patientId, query);
     }
 }
 

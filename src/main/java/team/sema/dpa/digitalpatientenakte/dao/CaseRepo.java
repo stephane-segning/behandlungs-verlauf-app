@@ -15,5 +15,7 @@ public interface CaseRepo {
     void delete(CaseEntity model);
 
     List<CaseEntity> findByPatientIdQuery(UUID patientId);
+
+    List<CaseEntity> findByPatientIdQuery(UUID patientId, String query);
 }
 

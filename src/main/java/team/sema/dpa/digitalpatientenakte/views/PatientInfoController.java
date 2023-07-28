@@ -2,6 +2,7 @@ package team.sema.dpa.digitalpatientenakte.views;
 
 import io.github.palexdev.materialfx.controls.MFXTableView;
 import io.github.palexdev.materialfx.controls.MFXTextField;
+import io.github.palexdev.materialfx.filter.StringFilter;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -27,16 +28,22 @@ public class PatientInfoController implements Initializable, ControlledScreen, C
     private CaseEntity caseE;
     private ScreensController screenParent;
     private CaseService caseService;
+
     @FXML
     private Label label;
+
     @FXML
     private Text patientID;
+
     @FXML
     private Text birthDate;
+
     @FXML
     private Text telNumber;
+
     @FXML
     private MFXTextField input;
+
     @FXML
     private MFXTableView<CaseEntity> table;
 
@@ -46,13 +53,21 @@ public class PatientInfoController implements Initializable, ControlledScreen, C
     }
 
     private void updateCaseTable() {
+        updateCaseTable("");
+    }
+
+    private void updateCaseTable(String query) {
         if (caseService == null || patient == null) {
             return;
         }
 
         final var items = table.getItems();
         items.clear();
-        items.addAll(caseService.getCaseByPatientId(patient.getId()));
+        final var casesByPatientId = query.isEmpty()
+                ? caseService.getCasesByPatientId(patient.getId())
+                : caseService.getCasesByPatientIdAndQuery(patient.getId(), query);
+        System.out.println("Got " + casesByPatientId.size() + " cases for patient " + casesByPatientId);
+        items.addAll(casesByPatientId);
     }
 
     public void setPatient(PatientEntity patient) {
@@ -81,11 +96,12 @@ public class PatientInfoController implements Initializable, ControlledScreen, C
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
+        setupTable();
         input.textProperty().addListener((observable, oldValue, newValue) -> updatePatientData(newValue));
     }
 
     private void updatePatientData(String query) {
-        System.out.println("Search button clicked");
+        updateCaseTable(query);
     }
 
     public void handleBack(ActionEvent actionEvent) {
@@ -100,5 +116,24 @@ public class PatientInfoController implements Initializable, ControlledScreen, C
             caseGraphController.setCaseE(caseE);
         }
         screenParent.setScreen(ScreenUtils.CASE_GRAPH);
+    }
+
+    private void setupTable() {
+        final var nameColumn = ClickableTableRowCell.of("ID Number", CaseEntity::getId, this::handleRowClick);
+        final var firstnameColumn = ClickableTableRowCell.of("Date", CaseEntity::getDate, this::handleRowClick);
+        final var lastnameColumn = ClickableTableRowCell.of("Arrived by", CaseEntity::getArrivedBy, this::handleRowClick);
+
+        table.getTableColumns().addAll(nameColumn, firstnameColumn, lastnameColumn);
+        table.getFilters().addAll(
+                new StringFilter<>("ID Number", (CaseEntity c) -> c.getId().toString()),
+                new StringFilter<>("Gender", (CaseEntity c) -> c.getDate().toString()),
+                new StringFilter<>("Arrived by", CaseEntity::getArrivedBy)
+        );
+
+        table.setTableRowFactory(ClickableTableRowCell.of(table, this::handleRowClick));
+    }
+
+    private void handleRowClick(CaseEntity aCase) {
+        System.out.println("Clicked on case " + aCase);
     }
 }

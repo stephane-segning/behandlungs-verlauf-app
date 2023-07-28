@@ -21,13 +21,13 @@ public class PatientEntity implements Serializable {
     private UUID id;
 
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
-    @Column(name = "id_number")
+    @Column(name = "id_number", nullable = false)
     private String idNumber;
 
-    @Column(name = "first_name")
+    @Column(name = "first_name", nullable = false)
     private String firstName;
 
-    @Column(name = "last_name")
+    @Column(name = "last_name", nullable = false)
     private String lastName;
 
     @Column(name = "birth_place")

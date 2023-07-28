@@ -12,17 +12,17 @@ import java.util.UUID;
 @Table(name = "flow_element_types")
 @Cacheable
 @org.hibernate.annotations.Cache(usage = CacheConcurrencyStrategy.READ_ONLY)
-public class FlowElementType implements Serializable {
+public class FlowElementTypeEntity implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
-    @Column(name = "step_id")
+    @Column(name = "type_id")
     private UUID id;
 
     @Column(columnDefinition = "varchar(50)")
     private String name;
 
-    @Column(columnDefinition = "varchar(50)")
+    @Column(columnDefinition = "varchar(50)", name = "personal_name", nullable = false)
     private String personalName;
 
 }

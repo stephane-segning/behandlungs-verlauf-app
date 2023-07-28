@@ -5,10 +5,11 @@
     <session-factory>
         <!-- Mapping with model class containing annotations -->
         <mapping class="team.sema.dpa.digitalpatientenakte.models.CaseEntity"/>
-        <mapping class="team.sema.dpa.digitalpatientenakte.models.FlowEdgeEntity"/>
+        <mapping class="team.sema.dpa.digitalpatientenakte.models.CaseStepEntity"/>
+        <mapping class="team.sema.dpa.digitalpatientenakte.models.FlowCaseStepView"/>
         <mapping class="team.sema.dpa.digitalpatientenakte.models.FlowChartElementEntity"/>
-        <mapping class="team.sema.dpa.digitalpatientenakte.models.FlowElementType"/>
+        <mapping class="team.sema.dpa.digitalpatientenakte.models.FlowEdgeEntity"/>
+        <mapping class="team.sema.dpa.digitalpatientenakte.models.FlowElementTypeEntity"/>
         <mapping class="team.sema.dpa.digitalpatientenakte.models.PatientEntity"/>
-        <mapping class="team.sema.dpa.digitalpatientenakte.models.PatientStepEntity"/>
     </session-factory>
 </hibernate-configuration>
