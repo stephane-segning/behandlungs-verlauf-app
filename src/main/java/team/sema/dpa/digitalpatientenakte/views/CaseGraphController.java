@@ -4,10 +4,14 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.apache.commons.collections4.SetUtils;
 import team.sema.dpa.digitalpatientenakte.models.CaseEntity;
+import team.sema.dpa.digitalpatientenakte.models.CaseStepEntity;
 import team.sema.dpa.digitalpatientenakte.models.PatientEntity;
+import team.sema.dpa.digitalpatientenakte.services.CaseStepService;
+import team.sema.dpa.digitalpatientenakte.state.Autowired;
 import team.sema.dpa.digitalpatientenakte.state.Component;
 import team.sema.dpa.digitalpatientenakte.state.ViewController;
 import team.sema.dpa.digitalpatientenakte.views.graphs.CellType;
@@ -15,15 +19,21 @@ import team.sema.dpa.digitalpatientenakte.views.graphs.Graph;
 import team.sema.dpa.digitalpatientenakte.views.utils.ScreenUtils;
 
 import java.net.URL;
+import java.util.List;
 import java.util.ResourceBundle;
+import java.util.stream.Collectors;
 
 @Setter
 @Getter
-@RequiredArgsConstructor
+@NoArgsConstructor
 @Component
 @ViewController(name = ScreenUtils.CASE_GRAPH, view = "views/case-graph.fxml")
 public class CaseGraphController implements Initializable {
-    private final ScreensController screenParent;
+    @Autowired
+    private ScreensController screenParent;
+
+    @Autowired
+    private CaseStepService stepService;
 
     private PatientEntity patient;
     private CaseEntity aCase;
@@ -42,7 +52,9 @@ public class CaseGraphController implements Initializable {
     }
 
     private void updateGraph() {
+        System.out.println("Update graph");
         if (patient == null || aCase == null) {
+            System.out.println("Patient or case is null");
             return;
         }
 
@@ -51,21 +63,12 @@ public class CaseGraphController implements Initializable {
 
         graph.beginUpdate();
 
-        model.addCell("Cell A", CellType.RECTANGLE);
-        model.addCell("Cell B", CellType.RECTANGLE);
-        model.addCell("Cell C", CellType.RECTANGLE);
-        model.addCell("Cell D", CellType.TRIANGLE);
-        model.addCell("Cell E", CellType.TRIANGLE);
-        model.addCell("Cell F", CellType.RECTANGLE);
-        model.addCell("Cell G", CellType.RECTANGLE);
+        List<CaseStepEntity> stepsByCaseId = stepService.getStepsByCaseId(aCase.getId());
+        final var flowCharts = stepsByCaseId.stream().map(CaseStepEntity::getFlowChart).collect(Collectors.toSet());
+        final var flowEdges = flowCharts.stream().flatMap(x -> SetUtils.union(x.getStartingEdges(), x.getEndingEdges()).stream()).collect(Collectors.toSet());
 
-        model.addEdge("Cell A", "Cell B");
-        model.addEdge("Cell A", "Cell C");
-        model.addEdge("Cell B", "Cell C");
-        model.addEdge("Cell C", "Cell D");
-        model.addEdge("Cell B", "Cell E");
-        model.addEdge("Cell D", "Cell F");
-        model.addEdge("Cell D", "Cell G");
+        flowCharts.forEach(x -> model.addCell(x.getName(), CellType.RECTANGLE));
+        flowEdges.forEach(x -> model.addEdge(x.getStartNode().getName(), x.getEndNode().getName()));
 
         graph.endUpdate();
     }

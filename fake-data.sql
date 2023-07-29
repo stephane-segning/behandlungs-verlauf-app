@@ -58,3 +58,29 @@ SELECT gen_random_uuid()                                                       A
        "case_id",
        (SELECT "flow_id" FROM "flow_chart_elements" ORDER BY random() LIMIT 1) AS "flow_id"
 FROM (SELECT "case_id" FROM "cases" ORDER BY random() LIMIT 100) AS c;
+
+-- Generating 10 steps for each combination of "flow_id" and "case_id"
+DO
+$$
+    DECLARE
+        flow_id_val uuid;
+        case_id_val uuid;
+        i           int;
+    BEGIN
+        FOR flow_id_val IN (SELECT DISTINCT "flow_id" FROM "flow_chart_elements")
+            LOOP
+                FOR case_id_val IN (SELECT DISTINCT "case_id" FROM "cases")
+                    LOOP
+                        FOR i IN 1..10
+                            LOOP
+                                INSERT INTO "case_steps" ("step_id", "data", "case_id", "flow_id")
+                                VALUES (gen_random_uuid(),
+                                        concat('Step_', gen_random_uuid(), ' Data'),
+                                        case_id_val,
+                                        flow_id_val);
+                            END LOOP;
+                    END LOOP;
+            END LOOP;
+    END
+$$;
+

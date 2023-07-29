@@ -21,7 +21,7 @@ public class PatientEntity implements Serializable {
     private UUID id;
 
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
-    @Column(name = "id_number", nullable = false)
+    @Column(name = "id_number")
     private String idNumber;
 
     @Column(name = "first_name", nullable = false)

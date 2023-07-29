@@ -1,18 +1,22 @@
 package team.sema.dpa.digitalpatientenakte.services;
 
-import lombok.RequiredArgsConstructor;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 import team.sema.dpa.digitalpatientenakte.dao.CaseStepRepo;
 import team.sema.dpa.digitalpatientenakte.models.CaseStepEntity;
+import team.sema.dpa.digitalpatientenakte.state.Autowired;
 import team.sema.dpa.digitalpatientenakte.state.Component;
 
 import java.util.List;
 import java.util.UUID;
 
 @Component
-@RequiredArgsConstructor
+@Setter
+@NoArgsConstructor
 public class CaseStepService {
 
-    private final CaseStepRepo repository;
+    @Autowired
+    private CaseStepRepo repository;
 
     public CaseStepEntity getStep(UUID id) {
         return repository.findById(id);

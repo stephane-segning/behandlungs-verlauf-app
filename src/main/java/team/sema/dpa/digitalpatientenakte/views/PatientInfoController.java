@@ -14,6 +14,7 @@ import lombok.Setter;
 import team.sema.dpa.digitalpatientenakte.models.CaseEntity;
 import team.sema.dpa.digitalpatientenakte.models.PatientEntity;
 import team.sema.dpa.digitalpatientenakte.services.CaseService;
+import team.sema.dpa.digitalpatientenakte.state.Autowired;
 import team.sema.dpa.digitalpatientenakte.state.Component;
 import team.sema.dpa.digitalpatientenakte.state.ViewController;
 import team.sema.dpa.digitalpatientenakte.views.utils.ClickableTableRowCell;
@@ -28,8 +29,11 @@ import java.util.ResourceBundle;
 @ViewController(name = ScreenUtils.PATIENT_INFO_SCREEN, view = "views/patient-info.fxml")
 @RequiredArgsConstructor
 public class PatientInfoController implements Initializable {
-    private final ScreensController screenParent;
-    private final CaseService caseService;
+    @Autowired
+    private ScreensController screenParent;
+
+    @Autowired
+    private CaseService caseService;
 
     private PatientEntity patient;
     private CaseEntity caseE;

@@ -5,10 +5,11 @@ import io.github.palexdev.materialfx.controls.MFXTextField;
 import io.github.palexdev.materialfx.filter.StringFilter;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
-import lombok.RequiredArgsConstructor;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 import team.sema.dpa.digitalpatientenakte.models.PatientEntity;
 import team.sema.dpa.digitalpatientenakte.services.PatientService;
+import team.sema.dpa.digitalpatientenakte.state.Autowired;
 import team.sema.dpa.digitalpatientenakte.state.Component;
 import team.sema.dpa.digitalpatientenakte.state.ViewController;
 import team.sema.dpa.digitalpatientenakte.views.utils.ClickableTableRowCell;
@@ -18,12 +19,15 @@ import java.net.URL;
 import java.util.ResourceBundle;
 
 @Setter
-@RequiredArgsConstructor
+@NoArgsConstructor
 @Component
 @ViewController(name = ScreenUtils.MAIN_SCREEN, view = "views/main.fxml")
 public class MainController implements Initializable {
-    private final PatientService patientService;
-    private final ScreensController screenParent;
+    @Autowired
+    private PatientService patientService;
+
+    @Autowired
+    private ScreensController screenParent;
 
     @FXML
     private MFXTextField input;

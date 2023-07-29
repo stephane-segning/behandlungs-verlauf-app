@@ -1,19 +1,23 @@
 package team.sema.dpa.digitalpatientenakte.dao.impl;
 
-import lombok.RequiredArgsConstructor;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import team.sema.dpa.digitalpatientenakte.dao.CaseRepo;
 import team.sema.dpa.digitalpatientenakte.models.CaseEntity;
+import team.sema.dpa.digitalpatientenakte.state.Autowired;
 import team.sema.dpa.digitalpatientenakte.state.Component;
 
 import java.util.List;
 import java.util.UUID;
 
 @Component
-@RequiredArgsConstructor
+@Setter
+@NoArgsConstructor
 public class CaseRepoImpl implements CaseRepo {
-    private final SessionFactory sessionFactory;
+    @Autowired
+    private SessionFactory sessionFactory;
 
     @Override
     public CaseEntity findById(UUID id) {

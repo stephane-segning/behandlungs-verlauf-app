@@ -14,8 +14,7 @@ public class InjectionUtil {
     /**
      * Perform injection recursively, for each service inside the Client class
      */
-    public static void autowire(Injector injector, Class<?> classz, Object classInstance)
-            throws InstantiationException, IllegalAccessException {
+    public static void autowire(Injector injector, Class<?> classz, Object classInstance) {
         final var fields = Fields.findAllAndMakeThemAccessible(
                 FieldCriteria.forEntireClassHierarchy().allThoseThatMatch(field ->
                         field.isAnnotationPresent(Autowired.class)
@@ -26,7 +25,9 @@ public class InjectionUtil {
             String qualifier = field.isAnnotationPresent(Qualifier.class)
                     ? field.getAnnotation(Qualifier.class).value()
                     : null;
+            System.out.println("Looking for an instance of " + field.getType().getName() + " with qualifier " + qualifier + " for field " + field.getName() + " in class " + classz.getName() + " with instance " + classInstance);
             Object fieldInstance = injector.getBeanInstance(field.getType(), field.getName(), qualifier);
+            System.out.println("Found instance " + fieldInstance);
             Fields.setDirect(classInstance, field, fieldInstance);
             autowire(injector, fieldInstance.getClass(), fieldInstance);
         }

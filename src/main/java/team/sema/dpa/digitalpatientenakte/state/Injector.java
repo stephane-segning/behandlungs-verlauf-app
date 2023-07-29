@@ -11,10 +11,9 @@ import org.burningwave.core.classes.SearchConfig;
 import team.sema.dpa.digitalpatientenakte.views.ScreensController;
 
 import java.io.IOException;
-import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Modifier;
-import java.util.*;
+import java.util.Collection;
 import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
@@ -34,19 +33,20 @@ public class Injector {
      * Start application
      *
      * @param mainClass main class of application
+     * @return
      */
-    public static void startApplication(Class<?> mainClass) {
+    public static Injector startApplication(Class<?> mainClass) {
         try {
             synchronized (Injector.class) {
                 if (injector == null) {
                     injector = new Injector();
                     injector.initFramework(mainClass);
-                    injector.initViewController(mainClass);
-                    injector.triggerAllInit();
                 }
             }
+            return injector;
         } catch (Exception ex) {
             ex.printStackTrace();
+            throw new RuntimeException(ex);
         }
     }
 
@@ -59,48 +59,11 @@ public class Injector {
         }
     }
 
-    public static List<Class<?>> getAllInterfaces(Class<?> clazz) {
-        List<Class<?>> interfaceList = new ArrayList<>();
-
-        while (clazz != null) {
-            Class<?>[] interfaces = clazz.getInterfaces();
-
-            interfaceList.addAll(Arrays.asList(interfaces));
-
-            // Get interfaces of the interfaces
-            for (Class<?> anInterface : interfaces) {
-                interfaceList.addAll(getAllInterfaces(anInterface));
-            }
-
-            // Move on to the superclass
-            clazz = clazz.getSuperclass();
-        }
-
-        return interfaceList;
-    }
-
-    public static List<Class<?>> getAllSuperClasses(Class<?> clazz) {
-        List<Class<?>> classList = new ArrayList<>();
-
-        Class<?> superclass = clazz.getSuperclass();
-
-        while (superclass != null) {
-            classList.add(superclass);
-            superclass = superclass.getSuperclass();
-        }
-
-        return classList;
-    }
-
     private void initViewController(Class<?> mainClass) throws IOException {
         final var screenController = getService(ScreensController.class);
-        final var components = applicationScope.values();
-        for (final var component : components) {
+        final var viewComponents = applicationScope.values().stream().filter(i -> i.getClass().isAnnotationPresent(ViewController.class)).collect(Collectors.toSet());
+        for (final var component : viewComponents) {
             final var classz = component.getClass();
-            if (!classz.isAnnotationPresent(ViewController.class)) {
-                continue;
-            }
-
             final var view = classz.getAnnotation(ViewController.class);
             final var loader = new FXMLLoader(mainClass.getResource(view.view()));
             loader.setControllerFactory(c -> component);
@@ -108,6 +71,7 @@ public class Injector {
             final var loadScreen = (Parent) loader.load();
             screenController.addScreen(view.name(), loadScreen, component);
         }
+        System.out.println("Loaded screens: " + viewComponents.size());
     }
 
     private void triggerAllInit() throws InvocationTargetException, IllegalAccessException {
@@ -120,8 +84,7 @@ public class Injector {
     /**
      * initialize the injector framework
      */
-    private void initFramework(Class<?> mainClass)
-            throws InstantiationException, IllegalAccessException, ClassNotFoundException, IOException, InvocationTargetException {
+    private void initFramework(Class<?> mainClass) throws IllegalAccessException, InvocationTargetException, IOException {
         final var classes = getClasses(mainClass.getPackage().getName(), true);
         final var componentConatiner = ComponentContainer.getInstance();
         final var classHunter = componentConatiner.getClassHunter();
@@ -131,6 +94,10 @@ public class Injector {
                         packageRelPath
                 ).by(ClassCriteria.create().allThoseThatMatch(cls -> cls.getAnnotation(Component.class) != null))
         )) {
+            for (final var classz : classes) {
+                registerClass(classz);
+            }
+
             Collection<Class<?>> types = result.getClasses();
             for (final var implementationClass : types) {
                 processBeanMethods(implementationClass);
@@ -139,61 +106,40 @@ public class Injector {
             // First pass: create all instances (without injection)
             for (final var classz : classes) {
                 if (classz.isAnnotationPresent(Component.class)) {
-                    registerClass(classz);
                     Object classInstance = createInstanceWithEmptyConstructor(classz);
                     applicationScope.put(classz, classInstance);
                 }
             }
 
-            // Second pass: inject dependencies
-            for (final var entry : applicationScope
-                    .entrySet()
-                    .stream()
-                    .filter(entry -> entry.getKey().getPackageName().startsWith(mainClass.getPackageName()))
-                    .filter(entry -> entry.getKey().getDeclaredConstructors().length > 0 && entry.getKey().getDeclaredConstructors()[0].getParameterCount() != 0)
-                    .sorted(Comparator.comparingInt(e -> e.getKey().getDeclaredConstructors()[0].getParameterCount()))
-                    .toList()) {
-                final var classz = entry.getKey();
-                var value = entry.getValue();
-
-                final var constructors = classz.getDeclaredConstructors();
-                final var constructor = constructors[0];
-                int parameterCount = constructor.getParameterCount();
-                if (parameterCount > 0) {
-                    value = createInstanceWithFullConstructor(constructor);
-                    entry.setValue(value);
-                    InjectionUtil.autowire(this, classz, value);
-                }
+            for (final var entry : applicationScope.entrySet()) {
+                InjectionUtil.autowire(this, entry.getKey(), entry.getValue());
             }
+
+            initViewController(mainClass);
+            triggerAllInit();
         }
     }
 
     private void processBeanMethods(Class<?> classz) throws InvocationTargetException, IllegalAccessException {
         for (final var method : classz.getDeclaredMethods()) {
             if (method.isAnnotationPresent(Bean.class)) {
-                System.out.println("Processing @Bean method " + method.getName());
                 if (!Modifier.isStatic(method.getModifiers())) {
                     throw new IllegalArgumentException("@Bean method " + method.getName() + " must be static");
                 }
                 final var bean = method.invoke(null);
                 applicationScope.put(bean.getClass(), bean);
-                registerClass(bean.getClass());
+                diMap.put(bean.getClass(), method.getReturnType());
             }
         }
     }
 
-    private Object createInstanceWithEmptyConstructor(Class<?> classz) throws InstantiationException, IllegalAccessException, InvocationTargetException {
-        final var constructor = classz.getConstructors()[0];  // Assume only one constructor.
-        return constructor.newInstance(new Object[constructor.getParameterCount()]);
-    }
-
-    private Object createInstanceWithFullConstructor(Constructor<?> constructor) throws InstantiationException, IllegalAccessException, InvocationTargetException {
-        Class<?>[] parameterTypes = constructor.getParameterTypes();
-        Object[] parameters = new Object[parameterTypes.length];
-        for (int i = 0; i < parameterTypes.length; i++) {
-            parameters[i] = getBeanInstance(parameterTypes[i]);
+    private Object createInstanceWithEmptyConstructor(Class<?> classz) {
+        try {
+            final var constructor = classz.getConstructors()[0];  // Assume only one constructor.
+            return constructor.newInstance(new Object[constructor.getParameterCount()]);
+        } catch (Exception e) {
+            throw new RuntimeException("Failed to create instance of " + classz.getName(), e);
         }
-        return constructor.newInstance(parameters);
     }
 
     private void invokeInitMethod(Object instance) throws InvocationTargetException, IllegalAccessException {
@@ -204,22 +150,21 @@ public class Injector {
         }
     }
 
-    private void registerClass(Class<?> classz) {
-        diMap.put(classz, classz);
-
-        for (Class<?> iface : getAllInterfaces(classz)) {
-            diMap.put(classz, iface);
-        }
-
-        for (Class<?> iface : getAllSuperClasses(classz)) {
-            diMap.put(classz, iface);
+    private void registerClass(Class<?> implementationClass) {
+        final var interfaces = implementationClass.getInterfaces();
+        if (interfaces.length == 0) {
+            diMap.put(implementationClass, implementationClass);
+        } else {
+            for (Class<?> iface : interfaces) {
+                diMap.put(implementationClass, iface);
+            }
         }
     }
 
     /**
      * Get all the classes for the input package
      */
-    public Class<?>[] getClasses(String packageName, boolean recursive) throws ClassNotFoundException, IOException {
+    public Class<?>[] getClasses(String packageName, boolean recursive) {
         ComponentContainer componentConatiner = ComponentContainer.getInstance();
         ClassHunter classHunter = componentConatiner.getClassHunter();
         String packageRelPath = packageName.replace(".", "/");
@@ -241,46 +186,45 @@ public class Injector {
      * Create and Get the Object instance of the implementation class for input
      * interface service
      */
-    @SuppressWarnings("unchecked")
-    private <T> T getBeanInstance(Class<T> interfaceClass) throws InstantiationException, IllegalAccessException {
-        return (T) getBeanInstance(interfaceClass, null, null);
+    private <T> T getBeanInstance(Class<T> interfaceClass) {
+        return getBeanInstance(interfaceClass, null, null);
     }
 
     /**
      * Overload getBeanInstance to handle qualifier and autowire by type
      */
-    public <T> Object getBeanInstance(Class<T> interfaceClass, String fieldName, String qualifier)
-            throws InstantiationException, IllegalAccessException {
+    public <T> T getBeanInstance(Class<T> interfaceClass, String fieldName, String qualifier) {
         final var implementationClass = getImplimentationClass(interfaceClass, fieldName, qualifier);
+        System.out.println("Getting instance for: " + implementationClass.getName());
 
         if (applicationScope.containsKey(implementationClass)) {
-            return applicationScope.get(implementationClass);
+            System.out.println("Returning existing instance for: " + implementationClass.getName());
+            return interfaceClass.cast(applicationScope.get(implementationClass));
         }
 
-        // final var service = implementationClass.newInstance();
-        // applicationScope.put(implementationClass, service);
-        // return service;
-        throw new RuntimeException("No implementation found for interface " + interfaceClass.getName());
+        throw new RuntimeException("No instance found for: " + implementationClass.getName());
     }
 
     /**
      * Get the name of the implimentation class for input interface service
      */
     private Class<?> getImplimentationClass(Class<?> interfaceClass, final String fieldName, final String qualifier) {
-        Set<Entry<Class<?>, Class<?>>> implementationClasses = diMap.entries().stream()
-                .filter(entry -> entry.getValue() == interfaceClass).collect(Collectors.toSet());
+        final var implementationClasses = diMap.entries().stream()
+                .filter(entry -> (!entry.getKey().isInterface()) && entry.getValue() == interfaceClass)
+                .map(Entry::getKey)
+                .collect(Collectors.toSet());
         String errorMessage;
         if (implementationClasses.size() == 0) {
             errorMessage = "no implementation found for interface " + interfaceClass.getName();
         } else if (implementationClasses.size() == 1) {
-            Optional<Entry<Class<?>, Class<?>>> optional = implementationClasses.stream().findFirst();
-            return optional.get().getKey();
+            final var optional = implementationClasses.stream().findFirst();
+            return optional.get();
         } else {
             final String findBy = (qualifier == null || qualifier.trim().length() == 0) ? fieldName : qualifier;
-            Optional<Entry<Class<?>, Class<?>>> optional = implementationClasses.stream()
-                    .filter(entry -> entry.getKey().getSimpleName().equalsIgnoreCase(findBy)).findAny();
+            final var optional = implementationClasses.stream()
+                    .filter(entry -> entry.getSimpleName().equalsIgnoreCase(findBy)).findAny();
             if (optional.isPresent()) {
-                return optional.get().getKey();
+                return optional.get();
             } else {
                 errorMessage = "There are " + implementationClasses.size() + " of interface " + interfaceClass.getName()
                         + " Expected single implementation or make use of @CustomQualifier to resolve conflict";

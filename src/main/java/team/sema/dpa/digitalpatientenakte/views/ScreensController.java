@@ -2,19 +2,22 @@ package team.sema.dpa.digitalpatientenakte.views;
 
 import javafx.scene.Node;
 import javafx.scene.layout.StackPane;
-import lombok.RequiredArgsConstructor;
 import team.sema.dpa.digitalpatientenakte.state.Component;
 import team.sema.dpa.digitalpatientenakte.state.PostConstruct;
 import team.sema.dpa.digitalpatientenakte.views.utils.ScreenUtils;
 
+import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentMap;
 
 @Component
-@RequiredArgsConstructor
 public class ScreensController extends StackPane {
-    private final ConcurrentMap<String, Node> screens = new ConcurrentHashMap<>();
-    private final ConcurrentMap<String, Object> controllers = new ConcurrentHashMap<>();
+    private final Map<String, Node> screens;
+    private final Map<String, Object> controllers;
+
+    public ScreensController() {
+        screens = new ConcurrentHashMap<>();
+        controllers = new ConcurrentHashMap<>();
+    }
 
     @PostConstruct
     public void init() {
@@ -26,10 +29,10 @@ public class ScreensController extends StackPane {
         controllers.put(name, controller);
     }
 
-    public void setScreen(final String name, final Object... params) {
+    public void setScreen(final String name) {
         final var element = screens.get(name);
         if (element == null) {
-            System.out.println("Screen hasn't been loaded!");
+            System.out.println("There is no screen with name " + name);
             return;
         }
 
@@ -39,7 +42,6 @@ public class ScreensController extends StackPane {
         } else {
             getChildren().add(element);
         }
-        System.out.println("Screen set: " + name);
     }
 
     public Object getController(String name) {

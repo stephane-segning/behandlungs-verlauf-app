@@ -8,8 +8,6 @@ import javafx.stage.Stage;
 import team.sema.dpa.digitalpatientenakte.state.Injector;
 import team.sema.dpa.digitalpatientenakte.views.ScreensController;
 
-import java.io.IOException;
-
 public class MainApplication extends Application {
 
     public static void main(String[] args) {
